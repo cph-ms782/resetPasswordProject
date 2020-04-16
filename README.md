@@ -1,6 +1,6 @@
 # Reset password projekt
 
-Before deployment:
+#### Before deployment:
 In root make .env file with secret values:
 
 >EMAIL_HOST=email service host  
@@ -14,10 +14,9 @@ PORT=3000
 DOMAIN=localhost:3000   #for testing purposes use localhost. Change to real domain on deployment server
 
 
-config/config.json
+#### config/config.json  
 this file is made by sequelize init. Change relevant values. If port 3306 is not used this insert
-"port": 3307 or whatever port is used
-:
+"port": 3307 or whatever port is used:  
 >{  
   "development": {  
     "username": "root",  
