@@ -26,7 +26,7 @@ app.use('/user', userRoute);
 
 app.get('/form', function (req, res) {
   //__dirname =  project folder.
-  res.sendFile(path.join(__dirname+'/form.html'))
+  res.sendFile(path.join(__dirname+'/html/form.html'))
 })
 
 const PORT = process.env.PORT || 3333;
