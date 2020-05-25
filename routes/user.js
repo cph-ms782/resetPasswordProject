@@ -38,6 +38,7 @@ router.post('/add-user', async function(req, res, next) {
 				});
 			}
 		} catch (err) {
+			console.log("error in add-user, ", err)
 			return { code: err, message: err };
 		}
 	} catch (err) {
