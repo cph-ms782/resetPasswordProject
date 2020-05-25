@@ -6,6 +6,85 @@ const express = require('express');
 const router = express.Router();
 const pug = require('pug');
 
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
+const bodyParser = require('body-parser');
+
+router.use(bodyParser.json());
+
+// ny add-user endpoint så man kan oprette sig fra hjemmeside
+router.post('/add-user', async function(req, res, next) {
+	try {
+		try {
+			// await ResetToken.destroy({
+			// 	where: {
+			// 		used: 1
+			// 	}
+			// });
+			console.log('add req.body.email', req.body.email);
+			let user = await User.findOne({ where: { email: req.body.email } });
+			console.log('adduser user', user);
+			if (user == null) {
+				//token expires after one hour
+				let createDate = new Date();
+
+				//insert token data into DB
+				await User.create({
+					username: 'testuser',
+					email: req.body.email,
+					password: req.body.password,
+					createdAt: createDate,
+					updatedAt: createDate
+				});
+			}
+		} catch (err) {
+			return { code: err, message: err };
+		}
+	} catch (err) {
+		next(err);
+	}
+});
+// ny get-user endpoint så man kan se brugeren
+router.post('/get-user', async function(req, res, next) {
+	try {
+		try {
+			let user = await User.findOne({ where: { email: req.body.email } });
+			console.log('get-user user', user);
+			return res.json(user);
+		} catch (err) {
+			return { code: err, message: err };
+		}
+	} catch (err) {
+		next(err);
+	}
+});
+// ny get-token endpoint så man kan se brugeren
+router.post('/get-user-token', async function(req, res, next) {
+	try {
+		try {
+			console.log('get req.body.email', req.body.email);
+			// let token = await ResetToken.findOne({
+			// 	where: {
+			// 		email: req.body.email,
+			// 	}
+			// });
+
+			let token = await ResetToken.findOne({
+				where: {
+					email: req.body.email,
+				},
+				order: [ [ 'expiration', 'DESC' ] ]
+			});
+
+			return res.json(token);
+		} catch (err) {
+			return { code: err, message: err };
+		}
+	} catch (err) {
+		next(err);
+	}
+});
+
 router.get('/forgot-password', async function(req, res, next) {
 	try {
 		res.render('forgot-password', {});
@@ -69,8 +148,7 @@ router.post('/forgot-password', async function(req, res, next) {
 			replyTo: process.env.REPLYTO_ADDRESS,
 			subject: process.env.FORGOT_PASS_SUBJECT_LINE,
 			text:
-				// 'To reset your password, please click the link below.\n\nhttp://' +
-				'To reset your password, please click the link below.\n\nhttps://' +
+				'For at nulstille dit kodeord, tryk på linket her nedendunder.\n\n' +
 				process.env.DOMAIN +
 				'/user/reset-password?token=' +
 				encodeURIComponent(token) +
@@ -92,9 +170,6 @@ router.post('/forgot-password', async function(req, res, next) {
 		next(err);
 	}
 });
-
-const Sequelize = require('sequelize');
-const Op = Sequelize.Op;
 
 router.get('/reset-password', async function(req, res, next) {
 	/**
@@ -132,7 +207,7 @@ router.get('/reset-password', async function(req, res, next) {
 
 		if (record == null) {
 			return res.render('reset-password', {
-				message: 'Token has expired. Please try password reset again.',
+				message: 'Token er udløbet. Prøv kodeords nulstilling igen.',
 				showForm: false
 			});
 		}
@@ -150,7 +225,7 @@ router.post('/reset-password', async function(req, res, next) {
 	//compare passwords
 	try {
 		if (req.body.password1 !== req.body.password2) {
-			return res.json({ status: 'error', message: 'Passwords do not match. Please try again.' });
+			return res.json({ status: 'error', message: 'Kodeord matcher ikke. Prøv igen.' });
 		}
 
 		/**
@@ -181,7 +256,7 @@ router.post('/reset-password', async function(req, res, next) {
 		if (record == null) {
 			return res.json({
 				status: 'error',
-				message: 'Token not found. Please try the reset password process again.'
+				message: 'Token er ikke fundet. Prøv reset password processen igen.'
 			});
 		}
 
@@ -197,7 +272,8 @@ router.post('/reset-password', async function(req, res, next) {
 		);
 
 		var newSalt = crypto.randomBytes(64).toString('hex');
-		var newPassword = crypto.pbkdf2Sync(req.body.password1, newSalt, 10000, 64, 'sha512').toString('base64');
+		// var newPassword = crypto.pbkdf2Sync(req.body.password1, newSalt, 10000, 64, 'sha512').toString('base64');
+		var newPassword = req.body.password1; // Virkelig usikker måde at gemme kodeord. Det er så man kan læse kodeord på test hjemmeside
 
 		await User.update(
 			{
@@ -211,7 +287,7 @@ router.post('/reset-password', async function(req, res, next) {
 			}
 		);
 
-		return res.json({ status: 'ok', message: 'Password reset. Please login with your new password.' });
+		return res.json({ status: 'ok', message: 'Kodeord er nulstillet. Benyt det nye kodeord fremover. Gå tilbage til reset side og tryk på Opdater' });
 	} catch (err) {
 		next(err);
 	}
