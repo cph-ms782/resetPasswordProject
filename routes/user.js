@@ -237,7 +237,7 @@ router.post('/reset-password', async function(req, res, next) {
 		const isValidPassword = (password) => {
 			return true; // TODO
 		};
-
+		console.log("post reset-password req.body", req.body)
 		if (!isValidPassword(req.body.password1)) {
 			return res.json({
 				status: 'error',
