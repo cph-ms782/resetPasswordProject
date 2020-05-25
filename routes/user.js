@@ -95,6 +95,7 @@ router.get('/forgot-password', async function(req, res, next) {
 });
 
 router.post('/forgot-password', async function(req, res, next) {
+	req.headers['content-type'] = 'application/x-www-form-urlencoded';
 	try {
 		//ensure that you have a user with this email
 		console.log('Got body:', req.body);
@@ -223,6 +224,7 @@ router.get('/reset-password', async function(req, res, next) {
 });
 
 router.post('/reset-password', async function(req, res, next) {
+	// req.headers['content-type'] = 'application/x-www-form-urlencoded';
 	//compare passwords
 	try {
 		if (req.body.password1 !== req.body.password2) {

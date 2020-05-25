@@ -15,6 +15,7 @@ const app = express();
 app.use(cors())
 
 
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.set('views', './views')
@@ -31,7 +32,6 @@ let oauthRoute = require('./routes/oauth');
 app.use(express.json());
 app.use('/user', userRoute);
 
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/oauth', oauthRoute);
 
 app.get('/form', function (req, res) {
