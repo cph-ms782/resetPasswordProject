@@ -1,5 +1,5 @@
 // npm install -g sequelize-cli
-// $ npm install --save sequelize mysql nodemailer express pug dotenv helmet mysql2
+// $ npm install --save sequelize mysql2 nodemailer express pug dotenv helmet
 
 const helmet = require('helmet');
 const path = require('path');

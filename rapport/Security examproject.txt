@@ -6,7 +6,6 @@ Vi vil lave en "reset password" funktion på en login side, der giver brugeren m
 Berørte emner: Webtokens, prepared statements, sikring af mysql, sikkerheds headers, krypterede kodeord
 
 Rapport emner:
-
 webtokens med/uden udløb (med: tokens bliver registreret i DB / uden: tokens gemmes på klienten)
 Ikke bruge færre en 8 tilfældige bytes til generering af token.
 Forbedret sikkerhed med ORM (sequelize og prepared statements)
